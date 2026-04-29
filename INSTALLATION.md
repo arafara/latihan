@@ -1,34 +1,15 @@
-# Installation Checklist - Stock Screener
+# Installation Guide - Laravel 13
 
-**Version:** Laravel 11 + Filament v3  
-**PHP:** 8.2+
-
----
-
-## ✅ Quick Install
+## Quick Install
 
 ```bash
-# 1. Clone
 git clone https://github.com/arafara/latihan.git
 cd latihan/stock-screener
-
-# 2. Install
 composer install
-npm install
-
-# 3. Setup
 cp .env.example .env
 php artisan key:generate
-
-# 4. Edit .env (DB + API keys)
-
-# 5. Migrate
 php artisan migrate
-
-# 6. Create admin user
 php artisan make:filament-user
-
-# 7. Run
 php artisan serve
 ```
 
@@ -36,90 +17,73 @@ php artisan serve
 
 ---
 
-## ✅ Detailed Steps
+## Detailed Steps
 
-### Step 1: Requirements
+### 1. Requirements Check
 
 ```bash
-php -v          # Should be 8.2+
-composer -V     # Should be 2.6+
-node -v         # Should be 18+
+php -v          # 8.2 or higher
+composer -V     # 2.6 or higher
 ```
 
-### Step 2: Clone
+### 2. Clone Repository
 
 ```bash
 git clone https://github.com/arafara/latihan.git
 cd latihan/stock-screener
 ```
 
-### Step 3: Install Composer
+### 3. Install Dependencies
 
 ```bash
 composer install
 ```
 
-**Expected:** No conflicts, all packages install successfully.
-
-### Step 4: Install NPM
-
-```bash
-npm install
-```
-
-### Step 5: Environment
+### 4. Environment Setup
 
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-### Step 6: Database
+### 5. Database Configuration
 
 Edit `.env`:
+
 ```env
 DB_CONNECTION=mysql
 DB_DATABASE=stock_screener
 DB_USERNAME=root
-DB_PASSWORD=
+DB_PASSWORD=your_password
 ```
 
 Create database:
+
 ```bash
-mysql -u root -p -e "CREATE DATABASE stock_screener;"
+mysql -u root -p -e "CREATE DATABASE stock_screener CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-### Step 7: API Keys
+### 6. API Keys
 
 Edit `.env`:
+
 ```env
 ALPACA_API_KEY=your_key_here
 ALPACA_API_SECRET=your_secret_here
 FINNHUB_API_KEY=your_key_here
 ```
 
-### Step 8: Migrate
+Get keys:
+- Alpaca: https://app.alpaca.markets/paper/dashboard/overview
+- Finnhub: https://finnhub.io/dashboard
+
+### 7. Run Migrations
 
 ```bash
 php artisan migrate
 ```
 
-**Expected tables:**
-- stocks
-- stock_prices
-- technical_indicators
-- watchlists
-- stock_watchlist
-- screeners
-- screener_results
-- alerts
-- alert_logs
-- users
-- cache
-- sessions
-- jobs
-
-### Step 9: Admin User
+### 8. Create Admin User
 
 ```bash
 php artisan make:filament-user
@@ -130,19 +94,17 @@ Enter:
 - Email: admin@example.com
 - Password: password
 
-### Step 10: Test
+### 9. Start Server
 
 ```bash
 php artisan serve
 ```
 
-Access: http://localhost:8000/admin
-
 ---
 
 ## 🐛 Troubleshooting
 
-### Composer conflicts
+### Composer Issues
 
 ```bash
 rm -rf vendor composer.lock
@@ -150,13 +112,7 @@ composer clear-cache
 composer install
 ```
 
-### Migration errors
-
-```bash
-php artisan migrate:fresh
-```
-
-### Filament errors
+### Cache Issues
 
 ```bash
 php artisan optimize:clear
@@ -166,20 +122,14 @@ php artisan cache:clear
 
 ---
 
-## ✅ Test Import
+## ✅ Test
 
 ```bash
-php artisan stocks:import AAPL TSLA MSFT --skip-historical
+php artisan stocks:import AAPL TSLA --skip-historical
 ```
 
-Should show:
-```
-✓ Imported AAPL
-✓ Imported TSLA
-✓ Imported MSFT
-✅ Import completed!
-```
+Should import 2 stocks successfully.
 
 ---
 
-**Installation Complete!** 🎉
+**Done!** 🎉
