@@ -1,47 +1,41 @@
 <x-filament-panels::page>
     <x-filament::section>
-        <x-slot name="heading">
-            Import Stocks from Watchlist
-        </x-slot>
-
-        <x-slot name="description">
-            Enter stock symbols (one per line) or upload a file to import multiple stocks at once.
-        </x-slot>
+        <div class="flex items-center gap-x-2.5 mb-6">
+            <div class="flex-1">
+                <h3 class="text-base font-semibold leading-6 text-gray-950 dark:text-white">
+                    Import Stocks from Watchlist
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Add multiple stocks by symbol (one per line)
+                </p>
+            </div>
+        </div>
 
         <form wire:submit="import" class="space-y-6">
             {{ $this->form }}
 
             <div class="flex items-center gap-4">
                 <x-filament::button type="submit" color="primary">
-                    <x-heroicon-o-arrow-down-tray class="w-5 h-5 mr-2" />
+                    <x-heroicon-o-cloud-arrow-up class="w-5 h-5 mr-2" />
                     Import Stocks
                 </x-filament::button>
 
                 <x-filament::button type="button" color="gray" tag="a" href="{{ route('filament.admin.resources.stocks.index') }}">
-                    Cancel
+                    View All Stocks
                 </x-filament::button>
             </div>
         </form>
-    </x-filament::section>
 
-    <x-filament::section class="mt-6">
-        <x-slot name="heading">
-            Instructions
-        </x-slot>
-
-        <div class="prose dark:prose-invert">
-            <ol>
-                <li>Enter stock symbols, one per line (e.g., AAPL, TSLA, MSFT)</li>
-                <li>Click "Import Stocks" to start the import process</li>
-                <li>The system will fetch company data from Finnhub and price data from Alpaca</li>
-                <li>Technical indicators will be calculated automatically</li>
-            </ol>
-
-            <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p class="text-sm text-blue-800 dark:text-blue-200">
-                    <strong>Note:</strong> Import may take 2-5 seconds per stock. For 200 stocks, expect 10-15 minutes.
-                </p>
-            </div>
+        <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <h4 class="text-sm font-medium text-blue-800 dark:text-blue-300 mb-2">
+                Tips:
+            </h4>
+            <ul class="text-sm text-blue-700 dark:text-blue-400 space-y-1 list-disc list-inside">
+                <li>Enter one stock symbol per line (e.g., AAPL, TSLA, MSFT)</li>
+                <li>Enable "Fetch Historical Data" to download price history (slower)</li>
+                <li>Enable "Fetch Indicators" to calculate technical indicators (RSI, MACD, etc.)</li>
+                <li>API rate limits may apply - import in batches if needed</li>
+            </ul>
         </div>
     </x-filament::section>
 </x-filament-panels::page>

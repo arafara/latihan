@@ -13,7 +13,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Repeater;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\IconColumn;
@@ -52,48 +51,6 @@ class ScreenerResource extends Resource
                             ->label('Active')
                             ->default(true),
                     ])->columns(2),
-
-                Forms\Components\Section::make('Screening Filters')
-                    ->description('Define your screening criteria')
-                    ->schema([
-                        Repeater::make('filters')
-                            ->schema([
-                                Select::make('category')
-                                    ->options([
-                                        'trend' => 'Trend',
-                                        'momentum' => 'Momentum',
-                                        'volume' => 'Volume',
-                                        'volatility' => 'Volatility',
-                                    ])
-                                    ->required()
-                                    ->live(),
-
-                                Select::make('indicator')
-                                    ->options(fn (callable $get) => self::getIndicatorsByCategory($get('category')))
-                                    ->required(),
-
-                                Select::make('operator')
-                                    ->options([
-                                        '>' => 'Greater than',
-                                        '>=' => 'Greater or equal',
-                                        '<' => 'Less than',
-                                        '<=' => 'Less or equal',
-                                        '=' => 'Equals',
-                                        '!=' => 'Not equals',
-                                    ])
-                                    ->required(),
-
-                                TextInput::make('value')
-                                    ->numeric()
-                                    ->required(),
-                            ])
-                            ->columns(4)
-                            ->collapsible()
-                            ->itemLabel(fn ($state): ?string => $state['indicator'] ?? null)
-                            ->minItems(1)
-                            ->maxItems(10)
-                            ->columnSpanFull(),
-                    ]),
             ]);
     }
 
@@ -157,16 +114,8 @@ class ScreenerResource extends Resource
                     ->color('success')
                     ->requiresConfirmation()
                     ->action(function (Screener $record) {
-                        // Run the screener
                         $record->run();
                     }),
-
-                Action::make('view_results')
-                    ->icon('heroicon-o-table-cells')
-                    ->label('View Results')
-                    ->url(fn (Screener $record) => route('filament.admin.resources.screener-results', ['record' => $record]))
-                    ->openUrlInNewTab()
-                    ->color('info'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -174,35 +123,6 @@ class ScreenerResource extends Resource
                 ]),
             ])
             ->defaultSort('name');
-    }
-
-    public static function getIndicatorsByCategory(?string $category): array
-    {
-        return match ($category) {
-            'trend' => [
-                'sma_20' => 'SMA 20',
-                'sma_50' => 'SMA 50',
-                'sma_200' => 'SMA 200',
-                'ema_12' => 'EMA 12',
-                'ema_26' => 'EMA 26',
-            ],
-            'momentum' => [
-                'rsi_14' => 'RSI (14)',
-                'macd' => 'MACD',
-                'stochastic_k' => 'Stochastic %K',
-                'stochastic_d' => 'Stochastic %D',
-            ],
-            'volume' => [
-                'volume_sma_20' => 'Volume SMA 20',
-                'obv' => 'OBV',
-            ],
-            'volatility' => [
-                'bollinger_upper' => 'Bollinger Upper',
-                'bollinger_lower' => 'Bollinger Lower',
-                'atr_14' => 'ATR (14)',
-            ],
-            default => [],
-        };
     }
 
     public static function getRelations(): array

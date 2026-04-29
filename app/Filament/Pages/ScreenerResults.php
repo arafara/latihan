@@ -2,13 +2,13 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\Screener;
 use Filament\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
-use Filament\Notifications\Notification;
+use App\Models\ScreenerResult;
+use App\Models\Screener;
 
 class ScreenerResults extends Page implements Tables\Contracts\HasTable
 {
@@ -20,94 +20,67 @@ class ScreenerResults extends Page implements Tables\Contracts\HasTable
 
     protected static ?string $navigationGroup = 'Screening';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $title = 'Screener Results';
 
-    public ?Screener $screener = null;
+    public ?int $selectedScreener = null;
 
-    public function mount(int $record): void
+    public function mount(): void
     {
-        $this->screener = Screener::with(['results.stock'])->findOrFail($record);
-        
-        // Run the screener if not run yet
-        if (!$this->screener->last_run_at) {
-            $this->screener->run();
-            
-            Notification::make()
-                ->title('Screener executed')
-                ->body("Found {$this->screener->last_result_count} matching stocks.")
-                ->success()
-                ->send();
-        }
+        //
     }
 
     public function table(Table $table): Table
     {
         return $table
             ->query(
-                \App\Models\Stock::query()
-                    ->with(['latestIndicators', 'latestPrice'])
+                ScreenerResult::query()
+                    ->when($this->selectedScreener, fn ($q) => $q->where('screener_id', $this->selectedScreener))
+                    ->latest()
             )
             ->columns([
-                TextColumn::make('symbol')
+                TextColumn::make('stock.symbol')
                     ->searchable()
                     ->sortable()
-                    ->weight('bold')
-                    ->copyable()
-                    ->copyMessage('Copied!'),
+                    ->weight('bold'),
 
-                TextColumn::make('name')
+                TextColumn::make('stock.name')
                     ->searchable()
-                    ->limit(30),
+                    ->limit(40),
 
-                BadgeColumn::make('exchange')
-                    ->colors([
-                        'NASDAQ' => 'info',
-                        'NYSE' => 'success',
-                        'AMEX' => 'warning',
-                    ]),
+                BadgeColumn::make('screener.name')
+                    ->label('Screener')
+                    ->color('info'),
 
-                TextColumn::make('latestIndicators.rsi_14')
-                    ->label('RSI')
-                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 2) : '-')
-                    ->color(fn ($state) => $state && $state < 30 ? 'success' : ($state && $state > 70 ? 'danger' : null))
+                TextColumn::make('match_score')
+                    ->label('Match %')
+                    ->numeric()
+                    ->suffix('%')
                     ->sortable(),
 
-                TextColumn::make('latestIndicators.change_percent')
-                    ->label('Change %')
-                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 2) . '%' : '-')
-                    ->color(fn ($state) => $state && $state > 0 ? 'success' : ($state && $state < 0 ? 'danger' : null)),
-
-                TextColumn::make('sector')
-                    ->searchable()
-                    ->toggleable(),
-
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->dateTime('M j, Y H:i')
+                    ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('exchange')
-                    ->options([
-                        'NASDAQ' => 'NASDAQ',
-                        'NYSE' => 'NYSE',
-                        'AMEX' => 'AMEX',
-                    ]),
+                Tables\Filters\SelectFilter::make('screener')
+                    ->options(
+                        Screener::pluck('name', 'id')
+                    ),
             ])
             ->actions([
-                Tables\Actions\Action::make('view_chart')
-                    ->icon('heroicon-o-chart-line')
-                    ->label('Chart')
-                    ->url(fn ($record) => "https://tradingview.com/chart/?symbol={$record->exchange}:{$record->symbol}")
-                    ->openUrlInNewTab()
-                    ->color('info'),
+                Tables\Actions\Action::make('view_stock')
+                    ->icon('heroicon-o-eye')
+                    ->label('View')
+                    ->url(fn (ScreenerResult $record) => route('filament.admin.resources.stocks.edit', ['record' => $record->stock_id])),
             ])
-            ->defaultSort('symbol');
+            ->defaultSort('created_at', 'desc')
+            ->paginated([15, 25, 50, 100]);
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return false; // Hidden from nav, accessed via action
+        return true;
     }
 }

@@ -14,17 +14,16 @@ class EditScreener extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
-            Actions\Action::make('run_now')
-                ->label('Run Now')
-                ->icon('heroicon-o-play')
-                ->color('success')
-                ->requiresConfirmation()
-                ->action(fn ($record) => $record->run()),
         ];
     }
 
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function getSavedNotificationTitle(): ?string
+    {
+        return 'Screener updated successfully';
     }
 }

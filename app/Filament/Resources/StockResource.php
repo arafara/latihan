@@ -19,7 +19,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\Action;
-use Illuminate\Database\Eloquent\Builder;
 
 class StockResource extends Resource
 {
@@ -122,17 +121,6 @@ class StockResource extends Resource
                     ->boolean()
                     ->sortable(),
 
-                TextColumn::make('latestPrice.close')
-                    ->label('Last Price')
-                    ->money('USD')
-                    ->toggleable(),
-
-                TextColumn::make('latestIndicators.rsi_14')
-                    ->label('RSI')
-                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 2) : '-')
-                    ->color(fn ($state) => $state && $state < 30 ? 'success' : ($state && $state > 70 ? 'danger' : null))
-                    ->toggleable(),
-
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -158,16 +146,6 @@ class StockResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
-
-                Action::make('fetch_price')
-                    ->icon('heroicon-o-arrow-path')
-                    ->label('Fetch Price')
-                    ->requiresConfirmation()
-                    ->action(function (Stock $record) {
-                        // Will be implemented with Alpaca API
-                        $record->load('latestPrice');
-                    })
-                    ->color('info'),
 
                 Action::make('view_chart')
                     ->icon('heroicon-o-chart-line')

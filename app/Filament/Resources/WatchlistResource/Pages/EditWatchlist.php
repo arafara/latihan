@@ -14,11 +14,6 @@ class EditWatchlist extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
-            Actions\Action::make('view_stocks')
-                ->label('View Stocks')
-                ->icon('heroicon-o-eye')
-                ->url(fn ($record) => route('filament.admin.resources.stocks.index'))
-                ->color('info'),
         ];
     }
 

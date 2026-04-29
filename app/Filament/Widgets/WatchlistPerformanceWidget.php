@@ -2,74 +2,45 @@
 
 namespace App\Filament\Widgets;
 
+use Filament\Widgets\Widget;
+use App\Models\Watchlist;
 use App\Models\Stock;
-use App\Models\TechnicalIndicator;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Widgets\TableWidget as BaseWidget;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
-class WatchlistPerformanceWidget extends BaseWidget
+class WatchlistPerformanceWidget extends Widget
 {
-    protected int | string | array $columnSpan = 'full';
-
     protected static ?int $sort = 2;
 
-    public function table(Table $table): Table
+    protected int | string | array $columnSpan = 'full';
+
+    protected static string $view = 'filament.widgets.watchlist-performance-widget';
+
+    public function getWatchlists(): array
     {
-        return $table
-            ->query(
-                Stock::query()
-                    ->with(['latestIndicators'])
-                    ->whereHas('watchlists')
-                    ->orderBy('symbol')
-                    ->limit(10)
-            )
-            ->defaultPaginationPageOption(10)
-            ->columns([
-                TextColumn::make('symbol')
-                    ->searchable()
-                    ->sortable()
-                    ->weight('bold')
-                    ->copyable()
-                    ->copyMessage('Copied!'),
-
-                TextColumn::make('name')
-                    ->limit(30)
-                    ->toggleable(),
-
-                BadgeColumn::make('exchange')
-                    ->colors([
-                        'NASDAQ' => 'info',
-                        'NYSE' => 'success',
-                        'AMEX' => 'warning',
-                    ]),
-
-                TextColumn::make('latestIndicators.rsi_14')
-                    ->label('RSI')
-                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 2) : '-')
-                    ->color(fn ($state) => $state && $state < 30 ? 'success' : ($state && $state > 70 ? 'danger' : null))
-                    ->sortable(),
-
-                TextColumn::make('latestIndicators.change_percent')
-                    ->label('Change %')
-                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 2) . '%' : '-')
-                    ->color(fn ($state) => $state && $state > 0 ? 'success' : ($state && $state < 0 ? 'danger' : null))
-                    ->sortable(),
-
-                TextColumn::make('sector')
-                    ->toggleable(isToggledHiddenByDefault: true),
+        return Watchlist::withCount('stocks')
+            ->orderBy('stocks_count', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(fn ($watchlist) => [
+                'name' => $watchlist->name,
+                'stocks_count' => $watchlist->stocks_count,
+                'description' => $watchlist->description ?? 'No description',
             ])
-            ->actions([
-                Tables\Actions\Action::make('view_chart')
-                    ->icon('heroicon-o-chart-line')
-                    ->label('Chart')
-                    ->url(fn (Stock $record) => "https://tradingview.com/chart/?symbol={$record->exchange}:{$record->symbol}")
-                    ->openUrlInNewTab()
-                    ->color('info'),
+            ->toArray();
+    }
+
+    public function getTopStocks(): array
+    {
+        // Get most watched stocks
+        return Stock::select('symbol', 'name', 'exchange')
+            ->where('is_active', true)
+            ->limit(10)
+            ->get()
+            ->map(fn ($stock) => [
+                'symbol' => $stock->symbol,
+                'name' => $stock->name ?? $stock->symbol,
+                'exchange' => $stock->exchange,
             ])
-            ->poll('60s');
+            ->toArray();
     }
 }

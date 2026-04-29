@@ -13,4 +13,9 @@ class CreateScreener extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    protected function getCreatedNotificationTitle(): ?string
+    {
+        return 'Screener created successfully';
+    }
 }

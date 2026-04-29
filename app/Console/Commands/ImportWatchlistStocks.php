@@ -14,7 +14,11 @@ class ImportWatchlistStocks extends Command
      *
      * @var string
      */
-    protected $signature = 'stocks:import {symbols?* : Stock symbols to import} {--all : Import all from watchlist file}';
+    protected $signature = 'stocks:import 
+                            {symbols?* : Stock symbols to import} 
+                            {--all : Import all from watchlist file}
+                            {--skip-historical : Skip historical data fetch}
+                            {--skip-indicators : Skip indicator calculation}';
 
     /**
      * The console command description.
@@ -112,54 +116,68 @@ class ImportWatchlistStocks extends Command
      */
     protected function fetchHistoricalData(string $symbol): void
     {
+        if ($this->option('skip-historical')) {
+            $this->warn("Skipping historical data for {$symbol}");
+            return;
+        }
+
         $stock = Stock::where('symbol', $symbol)->first();
 
         if (!$stock) {
             throw new \Exception("Stock {$symbol} not found in database");
         }
 
-        // Fetch 200 days of historical data
-        $bars = $this->alpaca->getBars(
-            $symbol,
-            '1Day',
-            now()->subDays(250),
-            now(),
-            200
-        );
-
-        if ($bars->isEmpty()) {
-            throw new \Exception("No historical data for {$symbol}");
-        }
-
-        // Save price data
-        foreach ($bars as $bar) {
-            \App\Models\StockPrice::updateOrCreate(
-                [
-                    'stock_id' => $stock->id,
-                    'date' => $bar['timestamp']->format('Y-m-d'),
-                ],
-                [
-                    'open' => $bar['open'],
-                    'high' => $bar['high'],
-                    'low' => $bar['low'],
-                    'close' => $bar['close'],
-                    'volume' => $bar['volume'],
-                    'vwap' => $bar['vwap'] ?? null,
-                    'trade_count' => $bar['trade_count'] ?? null,
-                ]
+        try {
+            // Fetch 200 days of historical data
+            $bars = $this->alpaca->getBars(
+                $symbol,
+                '1Day',
+                now()->subDays(250),
+                now(),
+                200
             );
+
+            if ($bars->isEmpty()) {
+                $this->warn("No historical data for {$symbol} (API limitation)");
+                return;
+            }
+
+            // Save price data
+            foreach ($bars as $bar) {
+                \App\Models\StockPrice::updateOrCreate(
+                    [
+                        'stock_id' => $stock->id,
+                        'date' => $bar['timestamp']->format('Y-m-d'),
+                    ],
+                    [
+                        'open' => $bar['open'],
+                        'high' => $bar['high'],
+                        'low' => $bar['low'],
+                        'close' => $bar['close'],
+                        'volume' => $bar['volume'],
+                        'vwap' => $bar['vwap'] ?? null,
+                        'trade_count' => $bar['trade_count'] ?? null,
+                    ]
+                );
+            }
+
+            // Calculate technical indicators
+            if (!$this->option('skip-indicators')) {
+                $indicators = \App\Services\Indicators\TechnicalIndicatorCalculator::calculateAll($bars);
+
+                \App\Models\TechnicalIndicator::updateOrCreate(
+                    [
+                        'stock_id' => $stock->id,
+                        'date' => now()->format('Y-m-d'),
+                    ],
+                    $indicators
+                );
+            }
+
+        } catch (\Exception $e) {
+            $this->warn("Failed to fetch historical data for {$symbol}: " . $e->getMessage());
+            // Continue without throwing - stock is still imported
         }
-
-        // Calculate technical indicators
-        $indicators = \App\Services\Indicators\TechnicalIndicatorCalculator::calculateAll($bars);
-
-        \App\Models\TechnicalIndicator::updateOrCreate(
-            [
-                'stock_id' => $stock->id,
-                'date' => now()->format('Y-m-d'),
-            ],
-            $indicators
-        );
     }
 
     /**

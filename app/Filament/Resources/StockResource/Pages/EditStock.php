@@ -14,14 +14,6 @@ class EditStock extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
-            Actions\Action::make('refresh_data')
-                ->label('Refresh Data')
-                ->icon('heroicon-o-arrow-path')
-                ->color('info')
-                ->requiresConfirmation()
-                ->action(function ($record) {
-                    // Will fetch latest data from API
-                }),
         ];
     }
 

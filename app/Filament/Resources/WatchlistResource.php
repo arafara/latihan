@@ -50,27 +50,6 @@ class WatchlistResource extends Resource
                             ->required()
                             ->default(auth()->id()),
                     ])->columns(2),
-
-                Forms\Components\Section::make('Stocks in Watchlist')
-                    ->schema([
-                        Forms\Components\Repeater::make('stocks')
-                            ->relationship('stocks')
-                            ->schema([
-                                Forms\Components\Select::make('stock_id')
-                                    ->relationship('stock', 'symbol')
-                                    ->searchable()
-                                    ->preload()
-                                    ->required(),
-                                Forms\Components\Textarea::make('pivot.notes')
-                                    ->label('Notes')
-                                    ->rows(2),
-                            ])
-                            ->orderColumn('position')
-                            ->reorderable()
-                            ->collapsible()
-                            ->itemLabel(fn ($state): ?string => $state['stock']['symbol'] ?? null)
-                            ->columnSpanFull(),
-                    ]),
             ]);
     }
 

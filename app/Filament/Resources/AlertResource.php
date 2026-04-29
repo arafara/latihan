@@ -52,10 +52,6 @@ class AlertResource extends Resource
                             ->required()
                             ->live(),
 
-                        Forms\Components\DynamicComponent::make('conditions')
-                            ->visible(fn (callable $get) => filled($get('type')))
-                            ->columnSpanFull(),
-
                         Toggle::make('is_active')
                             ->label('Active')
                             ->default(true),
@@ -170,7 +166,7 @@ class AlertResource extends Resource
                     ->color('info')
                     ->requiresConfirmation()
                     ->action(function (Alert $record) {
-                        // Send test notification
+                        $record->logTrigger('Test alert triggered', 'telegram', true);
                     }),
             ])
             ->bulkActions([
