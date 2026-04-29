@@ -40,6 +40,8 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                \App\Filament\Widgets\MarketOverviewWidget::class,
+                \App\Filament\Widgets\WatchlistPerformanceWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
