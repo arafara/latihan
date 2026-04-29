@@ -14,15 +14,15 @@ class ScreenerResults extends Page implements Tables\Contracts\HasTable
 {
     use Tables\Concerns\InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-table-cells';
+    protected static $navigationIcon = 'heroicon-o-table-cells';
 
-    protected static string $view = 'filament.pages.screener-results';
+    protected static $view = 'filament.pages.screener-results';
 
-    protected static ?string $navigationGroup = 'Screening';
+    protected static $navigationGroup = 'Screening';
 
-    protected static ?int $navigationSort = 10;
+    protected static $navigationSort = 10;
 
-    protected static ?string $title = 'Screener Results';
+    protected static $title = 'Screener Results';
 
     public ?int $selectedScreener = null;
 

@@ -20,13 +20,13 @@ use Filament\Tables\Filters\SelectFilter;
 
 class AlertResource extends Resource
 {
-    protected static ?string $model = Alert::class;
+    protected static $model = Alert::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-bell';
+    protected static $navigationIcon = 'heroicon-o-bell';
 
-    protected static ?string $navigationGroup = 'Alerts';
+    protected static $navigationGroup = 'Alerts';
 
-    protected static ?int $navigationSort = 1;
+    protected static $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

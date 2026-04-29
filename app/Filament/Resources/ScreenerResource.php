@@ -20,13 +20,13 @@ use Filament\Tables\Actions\Action;
 
 class ScreenerResource extends Resource
 {
-    protected static ?string $model = Screener::class;
+    protected static $model = Screener::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-funnel';
+    protected static $navigationIcon = 'heroicon-o-funnel';
 
-    protected static ?string $navigationGroup = 'Screening';
+    protected static $navigationGroup = 'Screening';
 
-    protected static ?int $navigationSort = 1;
+    protected static $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

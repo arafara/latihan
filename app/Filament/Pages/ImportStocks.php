@@ -15,15 +15,15 @@ class ImportStocks extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cloud-arrow-up';
+    protected static $navigationIcon = 'heroicon-o-cloud-arrow-up';
 
-    protected static string $view = 'filament.pages.import-stocks';
+    protected static $view = 'filament.pages.import-stocks';
 
-    protected static ?string $navigationGroup = 'Stock Management';
+    protected static $navigationGroup = 'Stock Management';
 
-    protected static ?int $navigationSort = 10;
+    protected static $navigationSort = 10;
 
-    protected static ?string $title = 'Import Stocks';
+    protected static $title = 'Import Stocks';
 
     public ?string $symbols = '';
 
