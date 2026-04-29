@@ -1,295 +1,258 @@
-# 📈 Stock Screener
+# Stock Screener - Laravel 13 + Filament v5.5.1
 
-**Technical Stock Screening for US Markets**
+Technical stock screening application for US markets with Alpaca & Finnhub API integration.
 
-A powerful stock screening application built with Laravel 13 + Filament 3, integrating Alpaca and Finnhub APIs for real-time market data and technical analysis.
-
-> 🚧 **Status:** Phase 1 - Foundation (In Progress)
-
----
-
-## 🎯 Features
-
-### Technical Indicators (15+)
-| Category | Indicators |
-|----------|------------|
-| **Trend** | SMA (20, 50, 200), EMA (12, 26), Price vs MA, MA Crossover |
-| **Momentum** | RSI (14), MACD, Stochastic, CCI |
-| **Volume** | Volume SMA, OBV, Volume Spike Detection |
-| **Volatility** | Bollinger Bands, ATR (14) |
-| **Price Action** | 52-Week High/Low, Gap Detection, Change % |
-
-### Screening
-- Multi-filter screening (combine multiple indicators)
-- Save screener presets
-- Export results to CSV/Excel
-- Real-time scan on-demand
-- Scheduled scans (daily/weekly)
-
-### Watchlist Management
-- Import 200+ stocks
-- Multiple watchlists with categories
-- Quick view key metrics
-- Notes per stock
-
-### Alerts & Notifications
-- Price alerts (above/below threshold)
-- Indicator alerts (RSI oversold/overbought, volume spike, etc.)
-- Telegram bot integration
-- Email notifications (optional)
-
-### Data Sources
-- **Alpaca API**: Real-time price data, historical OHLCV
-- **Finnhub API**: Fundamentals, company profile, news, sentiment
+![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20?style=flat&logo=laravel)
+![Filament](https://img.shields.io/badge/Filament-5.5.1-3C3C3C?style=flat)
+![PHP](https://img.shields.io/badge/PHP-8.3+-777BB4?style=flat&logo=php)
 
 ---
 
-## 🏗️ Architecture
+## ✨ Features
 
-```
-stock-screener/
-├── app/
-│   ├── Models/
-│   │   ├── Stock.php              # Stock symbol, name, sector
-│   │   ├── StockPrice.php         # Daily OHLCV data
-│   │   ├── TechnicalIndicator.php # Calculated indicators
-│   │   ├── Watchlist.php          # User watchlists
-│   │   ├── Screener.php           # Saved screeners
-│   │   ├── Alert.php              # Price/indicator alerts
-│   │   └── User.php               # Filament user
-│   ├── Services/
-│   │   ├── Alpaca/
-│   │   │   └── AlpacaService.php  # Alpaca API integration
-│   │   ├── Finnhub/
-│   │   │   └── FinnhubService.php # Finnhub API integration
-│   │   └── Indicators/
-│   │       └── TechnicalIndicatorCalculator.php
-│   ├── Filament/
-│   │   ├── Resources/             # Admin CRUD resources
-│   │   └── Widgets/               # Dashboard widgets
-│   └── Livewire/                  # Livewire components
-├── database/
-│   ├── migrations/                # Database schema
-│   ├── factories/                 # Test data factories
-│   └── seeders/                   # Database seeders
-└── config/
-    └── services.php               # API configurations
-```
+- 📊 **Stock Management** - CRUD via Filament admin panel
+- 🔔 **Price & Technical Alerts** - RSI, MACD, Moving Averages
+- 📈 **Watchlists** - Organize stocks into custom lists
+- 🎯 **Technical Screeners** - Filter stocks by indicators
+- 📉 **Historical Data** - Import from Alpaca API
+- 🔔 **Telegram Notifications** - Real-time alert notifications
 
 ---
 
-## 🗄️ Database Schema
-
-### Core Tables
-
-**stocks**
-- symbol, name, exchange, sector, industry, market_cap
-
-**stock_prices**
-- stock_id, date, open, high, low, close, volume, vwap
-
-**technical_indicators**
-- stock_id, date, SMA/EMA, RSI, MACD, Bollinger, ATR, OBV, etc.
-
-**watchlists & watchlist_items**
-- User watchlists with stocks
-
-**screeners & screener_results**
-- Saved screener configurations and results
-
-**alerts & alert_logs**
-- Price/indicator alerts with notification logs
-
----
-
-## 🚀 Setup Instructions
+## 🚀 Installation
 
 ### Prerequisites
 
-- PHP 8.2+
-- Composer 2.x
-- Node.js 18+
-- SQLite/MySQL
+- PHP 8.3+
+- Composer 2.8+
+- Node.js 20+
+- MySQL 8.0+ or PostgreSQL 15+
 
-### Installation
+### Step 1: Clone Repository
 
-1. **Clone and install dependencies**
 ```bash
-cd stock-screener
+git clone https://github.com/arafara/latihan.git
+cd latihan/stock-screener
+```
+
+### Step 2: Install Dependencies
+
+```bash
 composer install
 npm install
 ```
 
-2. **Environment setup**
+### Step 3: Environment Setup
+
 ```bash
+# Copy environment file
 cp .env.example .env
+
+# Generate application key
 php artisan key:generate
 ```
 
-3. **Configure API keys** (`.env`)
+### Step 4: Configure Database & API Keys
+
+Edit `.env` file:
+
 ```env
-# Alpaca API
+# Database
+DB_CONNECTION=mysql
+DB_DATABASE=stock_screener
+DB_USERNAME=root
+DB_PASSWORD=your_password
+
+# Alpaca API (Market Data)
 ALPACA_API_KEY=your_alpaca_key
 ALPACA_API_SECRET=your_alpaca_secret
 
-# Finnhub API
+# Finnhub API (Company Data)
 FINNHUB_API_KEY=your_finnhub_key
-
-# Telegram (optional)
-TELEGRAM_BOT_TOKEN=your_bot_token
-TELEGRAM_CHAT_ID=your_chat_id
 ```
 
-4. **Database setup**
+### Step 5: Create Database
+
 ```bash
-touch database/database.sqlite
+# MySQL
+mysql -u root -p -e "CREATE DATABASE stock_screener;"
+```
+
+### Step 6: Run Migrations
+
+```bash
 php artisan migrate
 ```
 
-5. **Build assets**
+### Step 7: Create Admin User
+
 ```bash
-npm run dev  # Development
-npm run build # Production
+php artisan make:filament-user
+
+# Enter:
+# Name: Admin
+# Email: admin@example.com
+# Password: password
 ```
 
-6. **Start server**
+### Step 8: Run Server
+
 ```bash
+# Terminal 1 - Backend
 php artisan serve
+
+# Terminal 2 - Frontend (optional, for Vite)
+npm run dev
 ```
 
-Visit: http://localhost:8000/admin
+**Access Admin Panel:** `http://localhost:8000/admin`
 
 ---
 
-## 📊 API Integration
+## 📦 Import Stocks
+
+### Import Specific Stocks
+
+```bash
+# Import without historical data (fast)
+php artisan stocks:import AAPL TSLA MSFT GOOGL AMZN --skip-historical
+
+# Import with historical data (slower, requires valid API)
+php artisan stocks:import AAPL TSLA MSFT
+```
+
+### Import from Watchlist File
+
+Create `storage/app/watchlist.txt`:
+
+```
+AAPL
+TSLA
+MSFT
+GOOGL
+AMZN
+NVDA
+META
+NFLX
+```
+
+Run import:
+
+```bash
+php artisan stocks:import --all --skip-historical
+```
+
+### Command Options
+
+| Option | Description |
+|--------|-------------|
+| `--skip-historical` | Skip fetching historical price data |
+| `--skip-indicators` | Skip calculating technical indicators |
+| `--all` | Import all stocks from watchlist.txt |
+
+---
+
+## 🗂️ Database Structure
+
+### Tables
+
+| Table | Description |
+|-------|-------------|
+| `stocks` | Stock symbols, names, sectors |
+| `stock_prices` | Daily OHLCV data |
+| `technical_indicators` | RSI, MACD, Moving Averages, etc. |
+| `watchlists` | User watchlists |
+| `stock_watchlist` | Pivot table for stocks ↔ watchlists |
+| `screeners` | Screening configurations |
+| `screener_results` | Screening results |
+| `alerts` | Price/indicator alerts |
+| `alert_logs` | Alert trigger history |
+| `users` | Admin users |
+
+---
+
+## 🔧 API Integration
 
 ### Alpaca API (Market Data)
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| `getQuote()` | `/v2/stocks/{symbol}/quotes/latest` | Latest quote |
-| `getBars()` | `/v2/stocks/{symbol}/bars` | OHLCV historical data |
-| `getMultipleBars()` | `/v2/stocks/multi/bars` | Batch bars for multiple symbols |
-| `getSnapshot()` | `/v2/stocks/{symbol}/snapshot` | Complete snapshot |
-| `getMultipleSnapshots()` | `/v2/stocks/multi/snapshot` | Batch snapshots |
+- **Base URL:** `https://data.alpaca.markets`
+- **Endpoints Used:**
+  - `/v2/stocks/{symbol}/quote` - Real-time quote
+  - `/v2/stocks/{symbol}/snapshot` - Full snapshot
+  - `/v2/stocks/{symbol}/bars` - Historical bars
 
-**Rate Limit:** 200 calls/minute (free tier)
+**Free Tier Limitations:**
+- IEX feed only (not SIP)
+- 403 error on recent SIP data (handled gracefully)
 
-### Finnhub API (Fundamentals)
+### Finnhub API (Company Data)
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| `getQuote()` | `/quote` | Real-time quote |
-| `getCompanyProfile()` | `/stock/profile2` | Company info |
-| `getCompanyMetrics()` | `/stock/metric` | P/E, P/B, ROE, etc. |
-| `screener()` | `/stock/screener` | Stock screener |
-| `getCandles()` | `/stock/candle` | OHLCV data |
-| `getCompanyNews()` | `/company-news` | Company news |
+- **Base URL:** `https://finnhub.io/api/v1`
+- **Endpoints Used:**
+  - `/stock/profile2` - Company profile
+  - `/quote` - Real-time quote
+  - `/stock/peers` - Competitor stocks
 
-**Rate Limit:** 60 calls/minute (free tier)
-
----
-
-## 🔧 Development Phases
-
-### ✅ Phase 1: Foundation (Current)
-- [x] Project scaffold
-- [x] Database schema
-- [x] Alpaca API service
-- [x] Finnhub API service
-- [x] Technical indicator calculator
-- [ ] Models complete
-- [ ] Filament resources
-
-### 🔄 Phase 2: Core Features
-- [ ] Import watchlist (200 stocks)
-- [ ] Fetch & cache price data
-- [ ] Calculate indicators daily
-- [ ] Stock screener UI
-- [ ] Results table with export
-
-### 📋 Phase 3: Advanced Features
-- [ ] Price alerts
-- [ ] Telegram notifications
-- [ ] Chart visualization (TradingView)
-- [ ] Save screener presets
-- [ ] Dashboard widgets
-
-### 📋 Phase 4: Polish
-- [ ] Performance optimization
-- [ ] Unit/Feature tests
-- [ ] Documentation
-- [ ] Deployment setup
+**Free Tier Limitations:**
+- 60 API calls/minute
+- Basic fundamentals only
 
 ---
 
-## 📝 Usage Examples
+## 🎯 Filament v5.5.1 Compatibility
 
-### Fetch Stock Data
+All Filament resources use **no type declarations** on static properties:
+
 ```php
-use App\Services\Alpaca\AlpacaService;
-use App\Services\Finnhub\FinnhubService;
+// ✅ CORRECT for Filament v5
+class StockResource extends Resource
+{
+    protected static $model = Stock::class;
+    protected static $navigationIcon = 'heroicon-o-chart-bar';
+    protected static $navigationGroup = 'Stock Management';
+}
 
-$alpaca = new AlpacaService();
-$finnhub = new FinnhubService();
-
-// Get latest quote
-$quote = $alpaca->getQuote('AAPL');
-
-// Get historical bars (200 days)
-$bars = $alpaca->getBars('AAPL', '1Day', now()->subDays(200), now(), 200);
-
-// Calculate indicators
-use App\Services\Indicators\TechnicalIndicatorCalculator;
-$indicators = TechnicalIndicatorCalculator::calculateAll($bars);
-
-// Get company fundamentals
-$metrics = $finnhub->getCompanyMetrics('AAPL');
-```
-
-### Screen for Oversold Stocks
-```php
-// RSI < 30, Price above SMA 200, Volume spike
-$screened = $stocks->filter(function($stock) {
-    $indicators = $stock->latestIndicators;
-    return $indicators->rsi_14 < 30
-        && $indicators->sma_200
-        && $indicators->hasVolumeSpike($currentVolume, 1.5);
-});
+// ❌ WRONG - Will cause errors
+protected static ?string $model = Stock::class;
 ```
 
 ---
 
-## 🎯 Screeners (Preset Ideas)
+## 🛠️ Development
 
-### Momentum Play
-- RSI < 30 (oversold)
-- Price > SMA 200 (uptrend)
-- Volume > 1.5x average
+### Run Tests
 
-### Breakout Play
-- Price near 52-week high (>95%)
-- Volume spike > 2x average
-- MACD bullish crossover
+```bash
+php artisan test
+```
 
-### Golden Cross
-- SMA 50 > SMA 200
-- Price > SMA 20 and SMA 50
-- RSI between 40-70
+### Code Style
 
-### Value Play
-- P/E < 20 (from Finnhub)
-- P/B < 3
-- ROE > 15%
+```bash
+composer lint
+composer format
+```
+
+### Clear Cache
+
+```bash
+php artisan optimize:clear
+```
 
 ---
 
 ## 📄 License
 
-MIT License
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Built with ❤️ by Fara**
+## 🤝 Support
 
-*Last Updated: April 2026*
+For issues or questions:
+- GitHub Issues: https://github.com/arafara/latihan/issues
+- Email: admin@example.com
+
+---
+
+**Built with ❤️ using Laravel 13 + Filament v5.5.1**
