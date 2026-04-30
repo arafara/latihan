@@ -20,11 +20,11 @@ use Filament\Tables\Filters\SelectFilter;
 
 class AlertResource extends Resource
 {
-    protected static ?string $model = Alert::class;
+    protected static string $model = Alert::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-bell';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-bell';
 
-    protected static ?string $navigationGroup = 'Alerts';
+    protected static string | \UnitEnum | null $navigationGroup = 'Alerts';
 
     protected static ?int $navigationSort = 1;
 

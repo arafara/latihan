@@ -20,11 +20,11 @@ use Filament\Tables\Actions\Action;
 
 class ScreenerResource extends Resource
 {
-    protected static ?string $model = Screener::class;
+    protected static string $model = Screener::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-funnel';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-funnel';
 
-    protected static ?string $navigationGroup = 'Screening';
+    protected static string | \UnitEnum | null $navigationGroup = 'Screening';
 
     protected static ?int $navigationSort = 1;
 

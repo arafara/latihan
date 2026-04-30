@@ -18,11 +18,11 @@ use Filament\Tables\Actions\Action;
 
 class WatchlistResource extends Resource
 {
-    protected static ?string $model = Watchlist::class;
+    protected static string $model = Watchlist::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-eye';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-eye';
 
-    protected static ?string $navigationGroup = 'Stock Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Stock Management';
 
     protected static ?int $navigationSort = 2;
 

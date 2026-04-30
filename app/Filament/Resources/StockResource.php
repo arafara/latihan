@@ -22,11 +22,11 @@ use Filament\Tables\Actions\Action;
 
 class StockResource extends Resource
 {
-    protected static ?string $model = Stock::class;
+    protected static string $model = Stock::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chart-bar';
 
-    protected static ?string $navigationGroup = 'Stock Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Stock Management';
 
     protected static ?int $navigationSort = 1;
 

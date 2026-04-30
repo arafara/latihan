@@ -1,10 +1,6 @@
-# Filament v5.5.1 Syntax Fix
+# Filament v5.x Syntax - CORRECT!
 
-## Problem
-
-Filament v5.5.1 requires **type declarations** on all static properties.
-
-## ✅ CORRECT Syntax for Filament v5.5.1
+## ✅ CORRECT Syntax for Filament v5.x (from official docs)
 
 ```php
 <?php
@@ -17,11 +13,11 @@ use Filament\Resources\Resource;
 
 class AlertResource extends Resource
 {
-    protected static ?string $model = Alert::class;
+    protected static string $model = Alert::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-bell';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-bell';
 
-    protected static ?string $navigationGroup = 'Alerts';
+    protected static string | \UnitEnum | null $navigationGroup = 'Alerts';
 
     protected static ?int $navigationSort = 1;
 
@@ -32,38 +28,20 @@ class AlertResource extends Resource
 ## ❌ WRONG Syntax (will cause errors)
 
 ```php
-// Missing type declarations - ERROR in Filament v5.5.1
-protected static $model = Alert::class;
-protected static $navigationIcon = 'heroicon-o-bell';
-protected static $navigationGroup = 'Alerts';
+// Using ?string - ERROR in Filament v5.x!
+protected static ?string $model = Alert::class;
+protected static ?string $navigationIcon = 'heroicon-o-bell';
+protected static ?string $navigationGroup = 'Alerts';
 ```
 
-## All Resources Updated
+## Key Points
 
-The following files have been fixed with correct syntax:
+- **`$model`**: Must be `string` (no null, no Union)
+- **`$navigationIcon`**: Must be `string | \BackedEnum | null`
+- **`$navigationGroup`**: Must be `string | \UnitEnum | null`
+- **`$navigationSort`**: Can be `?int` (nullable int)
 
-1. ✅ `app/Filament/Resources/StockResource.php`
-2. ✅ `app/Filament/Resources/AlertResource.php`
-3. ✅ `app/Filament/Resources/WatchlistResource.php`
-4. ✅ `app/Filament/Resources/ScreenerResource.php`
+## Source
 
-All properties now have `?string` or `?int` type declarations.
-
-## Installation
-
-```bash
-git clone https://github.com/arafara/latihan.git
-cd latihan/stock-screener
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate
-php artisan make:filament-user
-php artisan serve
-```
-
-**Access:** http://localhost:8000/admin
-
----
-
-**Tested with Filament v5.5.1 ✅**
+From official Filament 5.x documentation:
+https://filamentphp.com/docs/5.x/resources/overview
