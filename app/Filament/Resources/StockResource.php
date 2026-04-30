@@ -22,13 +22,13 @@ use Filament\Tables\Actions\Action;
 
 class StockResource extends Resource
 {
-    protected static $model = Stock::class;
+    protected static ?string $model = Stock::class;
 
-    protected static $navigationIcon = 'heroicon-o-chart-bar';
+    protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
 
-    protected static $navigationGroup = 'Stock Management';
+    protected static ?string $navigationGroup = 'Stock Management';
 
-    protected static $navigationSort = 1;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

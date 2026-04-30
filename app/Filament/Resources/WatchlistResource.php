@@ -18,13 +18,13 @@ use Filament\Tables\Actions\Action;
 
 class WatchlistResource extends Resource
 {
-    protected static $model = Watchlist::class;
+    protected static ?string $model = Watchlist::class;
 
-    protected static $navigationIcon = 'heroicon-o-eye';
+    protected static ?string $navigationIcon = 'heroicon-o-eye';
 
-    protected static $navigationGroup = 'Stock Management';
+    protected static ?string $navigationGroup = 'Stock Management';
 
-    protected static $navigationSort = 2;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
